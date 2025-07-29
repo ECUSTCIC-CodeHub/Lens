@@ -1,4 +1,5 @@
 ﻿#include "LensPch.h"
+
 #pragma comment(lib, "windowsapp")
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
