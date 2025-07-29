@@ -16,5 +16,6 @@
 #include <DispatcherQueue.h>
 #include <windows.ui.composition.interop.h>
 
-
 #include <Windows.h>
+
+#include "Log.h"
