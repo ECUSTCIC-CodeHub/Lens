@@ -11,6 +11,9 @@ namespace lens
 
 		~Window();
 
+		bool Create(int width = 800, int height = 600);
+
+        int Run();
 
 	private:
 		HINSTANCE m_hInstance;
