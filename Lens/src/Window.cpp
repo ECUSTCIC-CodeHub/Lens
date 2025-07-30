@@ -25,7 +25,7 @@ namespace lens
         {
             wcex.cbSize = sizeof(WNDCLASSEX);
             wcex.style = CS_HREDRAW | CS_VREDRAW;
-            wcex.lpfnWndProc = DefWindowProc;
+            wcex.lpfnWndProc = WindowProc;
             wcex.cbClsExtra = 0;
             wcex.cbWndExtra = 0;
             wcex.hInstance = m_hInstance;
@@ -77,5 +77,16 @@ namespace lens
         }
 
         return static_cast<int>(msg.wParam);
+    }
+
+    LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    {
+        switch (uMsg)
+        {
+        case WM_DESTROY:
+            PostQuitMessage(0);
+            return 0;
+        }
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
 }

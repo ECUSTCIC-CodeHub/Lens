@@ -15,6 +15,8 @@ namespace lens
 
         int Run();
 
+		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 	private:
 		HINSTANCE m_hInstance;
 		int m_nCmdShow;
