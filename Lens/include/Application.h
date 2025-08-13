@@ -1,15 +1,15 @@
 ﻿#pragma once
-#include <Window.h>
+#include <Windows.h>
 
 namespace lens
 {
-	class Window
+	class Application
 	{
 	public:
-		Window(HINSTANCE hInstance, int mCmdShow, 
+		Application(HINSTANCE hInstance, int mCmdShow, 
 			const wchar_t* className = L"LensWindowClass", const wchar_t* title = L"Lens Application");
 
-		~Window();
+		~Application();
 
 		bool Create(int width = 800, int height = 600);
 
@@ -23,5 +23,6 @@ namespace lens
 		HWND m_hwnd;
 		std::wstring m_className;
 		std::wstring m_title;
+		bool isExit;
 	};
 }

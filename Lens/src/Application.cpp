@@ -1,24 +1,26 @@
 ﻿#include "LensPch.h"
-#include "Window.h"
+#include "Application.h"
+#include "Log.h"
 
 namespace lens
 {
-    Window::Window(HINSTANCE hInstance, int mCmdShow, 
+    Application::Application(HINSTANCE hInstance, int mCmdShow,
         const wchar_t* className, const wchar_t* title)
         : m_hInstance(hInstance), 
           m_nCmdShow(mCmdShow), 
           m_className(className), 
-          m_title(title)
+          m_title(title),
+          isExit(false)
     {
         init_apartment(winrt::apartment_type::single_threaded);
     }
 
-    Window::~Window()
+    Application::~Application()
     {
 
     }
 
-    bool Window::Create(int width, int height) 
+    bool Application::Create(int width, int height)
     {
         // 注册窗口类
         WNDCLASSEX wcex = { 0 };
@@ -64,22 +66,33 @@ namespace lens
         ShowWindow(m_hwnd, m_nCmdShow);
         UpdateWindow(m_hwnd);
 
-        return true;
+        LOG_INFO("Window created successfule");
+        return true; 
     }
 
-    int Window::Run()
+    int Application::Run()
     {
         MSG msg;
-        while (GetMessage(&msg, nullptr, 0, 0))
+        while (!isExit)
         {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
+            while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+            {
+                if (msg.message == WM_QUIT)
+                {
+                    isExit = true;
+                    break;
+                }
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
 
+            if (isExit)
+                break;
+        }
         return static_cast<int>(msg.wParam);
     }
 
-    LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK Application::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         switch (uMsg)
         {
