@@ -9,11 +9,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_ LPWSTR    lpCmdLine,
                      _In_ int       nCmdShow)
 {
-    lens::Application window(hInstance, nCmdShow);
+    lens::Application app(hInstance, nCmdShow);
 
-    window.Create(800, 600);
+    app.Initialize();
 
-    auto res = window.Run();
+    auto res = app.Run();
 
     return res;
 }
