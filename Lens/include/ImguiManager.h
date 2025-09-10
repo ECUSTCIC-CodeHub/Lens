@@ -13,8 +13,12 @@ namespace lens
         ~ImguiManager();
 
         bool Initialize(HWND hwnd, ID3D11Device* device, ID3D11DeviceContext* device_context);
-        
+
+        void HandleMessage(MSG& msg);
+
         void ShowWindow();
+
+        void Draw();
 
         void Shutdown();
 

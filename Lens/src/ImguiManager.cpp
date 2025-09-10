@@ -31,12 +31,24 @@ namespace lens
         return true;
     }
 
+    void ImguiManager::HandleMessage(MSG& msg)
+    {
+        extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+        ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+    }
+
     void ImguiManager::ShowWindow()
     {
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
+        // 规划imgui控件在这写
+        ImGui::ShowDemoWindow();
+    }
+
+    void ImguiManager::Draw()
+    {
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     }

@@ -44,14 +44,14 @@ namespace lens
         //std::shared_ptr<class Texture> CreateTexture(const std::wstring& path);
         //std::shared_ptr<class Buffer> CreateBuffer(const D3D11_BUFFER_DESC& desc, const D3D11_SUBRESOURCE_DATA* initData = nullptr);
 
-        ID3D11Device* GetDevice() const { return m_device; }
+        ID3D11Device* GetDevice() const { return device; }
         ID3D11DeviceContext* GetContext() const { return m_context; }
         IDXGISwapChain* GetSwapChain() const { return m_swapChain; }
-        ID3D11RenderTargetView* m_defaultRTV = nullptr;
+        ID3D11RenderTargetView* defaultRTV = nullptr;
     private:
         RHI_dx11() {}
 
-        ID3D11Device* m_device;
+        ID3D11Device* device;
         IDXGISwapChain* m_swapChain;
         ID3D11DeviceContext* m_context;
         

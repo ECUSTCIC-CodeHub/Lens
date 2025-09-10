@@ -44,25 +44,23 @@ namespace lens
             D3D11_SDK_VERSION,
             &swapChainDesc,
             &m_swapChain,
-            &m_device,
+            &device,
             &featureLevel,
             &m_context);
 
         ID3D11Texture2D* pBackBuffer;
         m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-        m_device->CreateRenderTargetView(pBackBuffer, nullptr, &m_defaultRTV);
+        device->CreateRenderTargetView(pBackBuffer, nullptr, &defaultRTV);
         pBackBuffer->Release();
     }
 
     RHI_dx11::~RHI_dx11()
     {
         if (m_context) m_context->ClearState();
-        if (m_defaultRTV) m_defaultRTV->Release();
+        if (defaultRTV) defaultRTV->Release();
         if (m_defaultDSV) m_defaultDSV->Release();
         if (m_context) m_context->Release();
         if (m_swapChain) m_swapChain->Release();
-        if (m_device) m_device->Release();
+        if (device) device->Release();
     }
-
-    
 }

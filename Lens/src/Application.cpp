@@ -35,8 +35,8 @@ namespace lens
         m_rhi->Initialize(m_hwnd, 800, 600);
         m_imgui = new ImguiManager();
         m_imgui->Initialize(m_hwnd, m_rhi->GetDevice(), m_rhi->GetContext());
-
-        LOG_INFO("Application initialized successfully");
+        int a = 1;
+        LOG_INFO("Application initialized successfully {}",  1);
     }
 
     int Application::Run()
@@ -53,27 +53,21 @@ namespace lens
                 }
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
-                extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-                ImGui_ImplWin32_WndProcHandler(msg.hwnd, msg.message, msg.wParam, msg.lParam);
+                m_imgui->HandleMessage(msg);
             }
 
             if (isExit)
                 break;
 
-            // 开始 ImGui 帧
-            ImGui_ImplDX11_NewFrame();
-            ImGui_ImplWin32_NewFrame();
-            ImGui::NewFrame();
-
-            m_imgui->ShowDemoWindow();
-            // 渲染
-            ImGui::Render();
+            m_imgui->ShowWindow();
+            
             const float clear_color_with_alpha[4] = { 0.45f, 0.55f, 0.60f, 1.00f };
-            m_rhi->GetContext()->OMSetRenderTargets(1, &m_rhi->m_defaultRTV, nullptr);
-            m_rhi->GetContext()->ClearRenderTargetView(m_rhi->m_defaultRTV, clear_color_with_alpha);
-            ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+            m_rhi->GetContext()->OMSetRenderTargets(1, &m_rhi->defaultRTV, nullptr);
+            m_rhi->GetContext()->ClearRenderTargetView(m_rhi->defaultRTV, clear_color_with_alpha);
 
-            m_rhi->GetSwapChain()->Present(1, 0); // 启用垂直同步
+            m_imgui->Draw();
+
+            m_rhi->GetSwapChain()->Present(1, 0);
 
         }
         return static_cast<int>(msg.wParam);
