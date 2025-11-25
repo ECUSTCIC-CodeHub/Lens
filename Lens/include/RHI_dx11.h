@@ -14,6 +14,7 @@ namespace lens
         ~RHI_dx11();
 
         void Initialize(HWND hwnd, uint32_t width, uint32_t height);
+        void Resize(uint32_t width, uint32_t height);
 
         //void BeginFrame();
         //void EndFrame();

@@ -9,3 +9,9 @@
 /Lens/Debug
 /Lens/Release
 /Lens/x64/Release
+
+# claude code
+CLAUDE.md
+/.claude
+cc*.md
+*.log

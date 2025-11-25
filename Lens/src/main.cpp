@@ -11,10 +11,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     lens::Application app(hInstance, nCmdShow);
 
-    // 初始化组件
     app.Initialize();
 
-    // 执行流总入口
     auto res = app.Run();
 
     return res;

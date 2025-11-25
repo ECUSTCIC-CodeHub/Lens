@@ -54,6 +54,58 @@ namespace lens
         pBackBuffer->Release();
     }
 
+    void RHI_dx11::Resize(uint32_t width, uint32_t height)
+    {
+        if (!m_swapChain || !device || !m_context)
+            return;
+
+        // 释放现有的渲染目标视图
+        if (defaultRTV)
+        {
+            m_context->OMSetRenderTargets(0, nullptr, nullptr);
+            defaultRTV->Release();
+            defaultRTV = nullptr;
+        }
+
+        // 调整交换链大小
+        HRESULT hr = m_swapChain->ResizeBuffers(0, width, height, DXGI_FORMAT_UNKNOWN, 0);
+        if (FAILED(hr))
+        {
+            LOG_ERROR("Failed to resize swap chain buffers");
+            return;
+        }
+
+        // 创建新的渲染目标视图
+        ID3D11Texture2D* pBackBuffer;
+        hr = m_swapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+        if (FAILED(hr))
+        {
+            LOG_ERROR("Failed to get back buffer after resize");
+            return;
+        }
+
+        hr = device->CreateRenderTargetView(pBackBuffer, nullptr, &defaultRTV);
+        pBackBuffer->Release();
+
+        if (FAILED(hr))
+        {
+            LOG_ERROR("Failed to create render target view after resize");
+            return;
+        }
+
+        // 设置新的视口
+        D3D11_VIEWPORT viewport = {};
+        viewport.Width = static_cast<float>(width);
+        viewport.Height = static_cast<float>(height);
+        viewport.MinDepth = 0.0f;
+        viewport.MaxDepth = 1.0f;
+        viewport.TopLeftX = 0.0f;
+        viewport.TopLeftY = 0.0f;
+        m_context->RSSetViewports(1, &viewport);
+
+        LOG_INFO("RHI resized to {}x{}", width, height);
+    }
+
     RHI_dx11::~RHI_dx11()
     {
         if (m_context) m_context->ClearState();

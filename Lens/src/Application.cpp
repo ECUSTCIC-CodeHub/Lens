@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "RHI_dx11.h"
 #include "ImguiManager.h"
+#include "gui/DemoPanel.h"
+#include "gui/DebugPanel.h"
 #include "Log.h"
 
 
@@ -25,25 +27,35 @@ namespace lens
 
     void Application::Initialize()
     {
-        if (!CreateWindow_(800, 600))
+        if (!CreateLenWindow(800, 600))
         {
             LOG_ERROR("Failed to create window");
             return;
         }
-        
+
         m_rhi = RHI_dx11::Create(m_hwnd, 800, 600);
         m_rhi->Initialize(m_hwnd, 800, 600);
         m_imgui = new ImguiManager();
         m_imgui->Initialize(m_hwnd, m_rhi->GetDevice(), m_rhi->GetContext());
-        int a = 1;
-        LOG_INFO("Application initialized successfully {}",  1);
+
+        // Enable menu
+        m_imgui->SetMenuVisible(true);
+
+        // Register UI panels
+        UIManager* uiManager = m_imgui->GetUIManager();
+        uiManager->AddPanel<DemoPanel>();
+        uiManager->AddPanel<DebugPanel>();
+        uiManager->ShowPanel("Debug", true);
+
+        LOG_INFO("Application initialized successfully ");
     }
 
     int Application::Run()
     {
-        MSG msg;
+        MSG msg = { 0 };
         while (!isExit)
         {
+            // Handle Windows messages
             while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
             {
                 if (msg.message == WM_QUIT)
@@ -59,39 +71,82 @@ namespace lens
             if (isExit)
                 break;
 
-            m_imgui->ShowWindow();
-            
+            // Begin ImGui frame
+            m_imgui->BeginFrame();
+
+            // Clear the render target
             const float clear_color_with_alpha[4] = { 0.45f, 0.55f, 0.60f, 1.00f };
             m_rhi->GetContext()->OMSetRenderTargets(1, &m_rhi->defaultRTV, nullptr);
             m_rhi->GetContext()->ClearRenderTargetView(m_rhi->defaultRTV, clear_color_with_alpha);
 
-            m_imgui->Draw();
+            // Render all UI panels
+            m_imgui->GetUIManager()->RenderAll();
 
+            // End ImGui frame and render
+            m_imgui->EndFrame();
+
+            // Present the frame
             m_rhi->GetSwapChain()->Present(1, 0);
-
         }
+
         return static_cast<int>(msg.wParam);
     }
 
-    LRESULT CALLBACK Application::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK Application::WindowProcProxy(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    {
+        Application* app = nullptr;
+        if(uMsg == WM_NCCREATE)
+        {
+            CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+            app = reinterpret_cast<Application*>(pCreate->lpCreateParams);
+            SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(app));
+        }
+        else
+        {
+            app = reinterpret_cast<Application*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+        }
+        return app->WndProc(hwnd, uMsg, wParam, lParam);
+    }
+
+    LRESULT CALLBACK Application::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         switch (uMsg)
         {
         case WM_DESTROY:
             PostQuitMessage(0);
             return 0;
+        case WM_SIZE:
+            {
+                if (this->m_rhi !=nullptr && wParam != SIZE_MINIMIZED)
+                {
+                    int width = LOWORD(lParam);
+                    int height = HIWORD(lParam);
+
+                    // 首先调整RHI的交换链大小
+                    this->m_rhi->Resize(width, height);
+
+                    // 更新ImGui的显示尺寸
+                    ImGuiIO& io = ImGui::GetIO();
+                    io.DisplaySize = ImVec2((float)width, (float)height);
+
+                    float dpiScale = GetDpiForWindow(hWnd) / 96.0f; // 96 是默认 DPI
+                    io.DisplayFramebufferScale = ImVec2(dpiScale, dpiScale);
+                }
+            }
+            return 0;
+        default:
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
         }
-        return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
 
-    bool Application::CreateWindow_(int width, int height)
+    bool Application::CreateLenWindow(int width, int height)
     {
         // 注册窗口类
         WNDCLASSEX wcex = { 0 };
         {
             wcex.cbSize = sizeof(WNDCLASSEX);
             wcex.style = CS_HREDRAW | CS_VREDRAW;
-            wcex.lpfnWndProc = WindowProc;
+            wcex.lpfnWndProc = WindowProcProxy;
             wcex.cbClsExtra = 0;
             wcex.cbWndExtra = 0;
             wcex.hInstance = m_hInstance;
@@ -119,7 +174,7 @@ namespace lens
             nullptr,
             nullptr,
             m_hInstance,
-            nullptr
+            this // WindowProcProxys()使用
         );
 
         if (!m_hwnd)

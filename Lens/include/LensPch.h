@@ -18,4 +18,24 @@
 
 #include <Windows.h>
 
+// Standard Library
+#include <memory>
+#include <vector>
+#include <string>
+#include <map>
+#include <algorithm>
+#include <functional>
+#include <chrono>
+
+// DirectX
+#include <d3d11_1.h>
+#include <dxgi1_2.h>
+
+// ImGui (excluding from PCH for ImGui files themselves)
+#ifndef IMGUI_USER_CONFIG
+#include <imgui.h>
+#include <backends/imgui_impl_win32.h>
+#include <backends/imgui_impl_dx11.h>
+#endif
+
 #include "Log.h"

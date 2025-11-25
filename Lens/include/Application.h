@@ -17,10 +17,12 @@ namespace lens
 
         int Run();
 
-        static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+        static LRESULT CALLBACK WindowProcProxy(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
     private:
-        bool CreateWindow_(int width = 800, int height = 600);
+        bool CreateLenWindow(int width = 800, int height = 600);
+
+        LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
         HINSTANCE m_hInstance;
         int m_nCmdShow;
@@ -29,6 +31,8 @@ namespace lens
         RHI_dx11* m_rhi;
         ImguiManager* m_imgui;
 
+        int width;
+        int height;
         std::wstring m_className;
         std::wstring m_title;
         bool isExit;
