@@ -42,6 +42,18 @@
     <ClInclude Include="include\graphics\FrameBuffer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\gui\UIPanel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gui\UIManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gui\DemoPanel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\gui\DebugPanel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\LensPch.cpp">
@@ -77,7 +89,22 @@
     <ClCompile Include="src\imgui\imgui_widgets.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\imgui\*.cpp">
+    <ClCompile Include="src\imgui\imgui_demo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui\imgui_draw.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui\imgui_impl_dx11.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui\imgui_impl_win32.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui\imgui_tables.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\imgui\imgui_widgets.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\imgui\*.cpp">
@@ -123,6 +150,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\imgui\imgui_impl_win32.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\UIManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\DemoPanel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\DebugPanel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

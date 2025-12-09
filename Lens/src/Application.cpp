@@ -76,8 +76,8 @@ namespace lens
 
             // Clear the render target
             const float clear_color_with_alpha[4] = { 0.45f, 0.55f, 0.60f, 1.00f };
-            m_rhi->GetContext()->OMSetRenderTargets(1, &m_rhi->defaultRTV, nullptr);
-            m_rhi->GetContext()->ClearRenderTargetView(m_rhi->defaultRTV, clear_color_with_alpha);
+            m_rhi->GetContext()->OMSetRenderTargets(1, m_rhi->defaultRTV.GetAddressOf(), nullptr);
+            m_rhi->GetContext()->ClearRenderTargetView(m_rhi->defaultRTV.Get(), clear_color_with_alpha);
 
             // Render all UI panels
             m_imgui->GetUIManager()->RenderAll();

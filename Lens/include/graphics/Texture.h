@@ -3,6 +3,7 @@
 #include "RHI_dx11.h"
 #include <memory>
 #include <string>
+#include <wrl/client.h>
 
 namespace lens::graphics
 {
@@ -13,6 +14,7 @@ namespace lens::graphics
         {
             Default,
             Dynamic,
+            Staging,
             Immutable
         };
 
@@ -23,22 +25,28 @@ namespace lens::graphics
             Usage usage,
             const void* initData = nullptr);
 
+        static std::shared_ptr<Texture> CreateD3DTexture(ID3D11Texture2D* texture, bool takeOwnership = false);
+        
         static std::shared_ptr<Texture> FromFile(ID3D11Device* device, const std::wstring& path);
 
-        ID3D11Texture2D* GetTexture() const { return m_texture; }
+        ID3D11Texture2D* GetTexture() const { return m_texture.Get(); }
         ID3D11ShaderResourceView* GetSRV() const { return m_srv; }
         ID3D11RenderTargetView* GetRTV() const { return m_rtv; }
         ID3D11DepthStencilView* GetDSV() const { return m_dsv; }
 
     private:
-        Texture(ID3D11Texture2D* texture,
-            ID3D11ShaderResourceView* srv,
-            ID3D11RenderTargetView* rtv,
-            ID3D11DepthStencilView* dsv);
+        Texture() = default;
 
-        ID3D11Texture2D* m_texture;
+        Microsoft::WRL::ComPtr<ID3D11Texture2D> m_texture;
+
         ID3D11ShaderResourceView* m_srv;
         ID3D11RenderTargetView* m_rtv;
         ID3D11DepthStencilView* m_dsv;
+
+        uint32_t m_width = 0;
+        uint32_t m_height = 0;
+        DXGI_FORMAT m_format = DXGI_FORMAT_UNKNOWN;
+        Usage m_usage = Usage::Default;
+        bool m_ownsTexture = false;
     };
 }

@@ -54,6 +54,7 @@ namespace lens
         pBackBuffer->Release();
     }
 
+    // 后续考虑拆分
     void RHI_dx11::Resize(uint32_t width, uint32_t height)
     {
         if (!m_swapChain || !device || !m_context)
@@ -104,6 +105,50 @@ namespace lens
         m_context->RSSetViewports(1, &viewport);
 
         LOG_INFO("RHI resized to {}x{}", width, height);
+    }
+
+    void RHI_dx11::BeginFrame()
+    {
+        if (!m_context || !defaultRTV) {
+            return;
+        }
+
+        // 设置默认渲染目标
+        m_context->OMSetRenderTargets(1, defaultRTV.GetAddressOf(), nullptr);
+
+        // 清屏
+        float clearColor[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+        m_context->ClearRenderTargetView(defaultRTV.Get(), clearColor);
+    }
+
+    void RHI_dx11::EndFrame()
+    {
+        // 目前不需要有实现
+        LOG_WARN("RHI_dx11::EndFrame() is not implemented yet")
+    }
+
+    void RHI_dx11::Present(bool vsync)
+    {
+        if (!m_swapChain)
+        {
+            LOG_ERROR("Present Error, m_swapChain is nullptr")
+            return;
+        }
+
+        HRESULT hr = m_swapChain->Present(1, 0); // 启用垂直同步，考虑给个配置
+        if (FAILED(hr))
+        {
+            LOG_ERROR("Failed to present swap chain: {}", hr);
+        }
+    }
+
+    void RHI_dx11::Clear(const float clearColor[4])
+    {
+
+        if (m_context && defaultRTV) 
+        {
+            m_context->ClearRenderTargetView(defaultRTV.Get(), clearColor);
+        }
     }
 
     RHI_dx11::~RHI_dx11()

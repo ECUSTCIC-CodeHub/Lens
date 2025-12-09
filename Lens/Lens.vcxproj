@@ -186,6 +186,7 @@ xcopy /Y "$(SolutionDir)\3rd\imgui\backends\imgui_impl_win32.cpp" "$(ProjectDir)
     <ClInclude Include="include\gui\DebugPanel.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\graphics\Texture.cpp" />
     <ClCompile Include="src\RHI_dx11.cpp" />
     <ClCompile Include="src\ImguiManager.cpp" />
     <ClCompile Include="src\gui\UIManager.cpp" />
