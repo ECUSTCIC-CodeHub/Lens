@@ -1,55 +1,161 @@
-#include "LensPch.h"
+﻿#include "LensPch.h"
 #include "graphics/Shader.h"
-#include "RHI_dx11.h"
+#include <fstream>
 #include "Log.h"
 
-namespace lens::graphics
+namespace lens::graphics 
 {
-    std::shared_ptr<Shader> Shader::Create(
-        ID3D11Device* device,
-        const std::wstring& vsPath,
-        const std::wstring& psPath,
-        const std::vector<InputElement>& inputLayout)
+
+    bool Shader::LoadVertexShader(GraphicsDevice* device, const std::string& filename, const char* entryPoint) 
     {
-        if (!device || vsPath.empty() || psPath.empty()) {
-            LOG_ERROR("Invalid parameters for shader creation");
-            return nullptr;
+        ComPtr<ID3DBlob> blob;
+        if (!CompileShader(filename, entryPoint, "vs_5_0", blob)) 
+        {
+            return false;
         }
 
-        // 读取着色器文件
-        std::vector<uint8_t> vsData;
-        std::vector<uint8_t> psData;
+        HRESULT hr = device->GetDevice()->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &m_vertexShader);
+        if (FAILED(hr)) 
+        {
+            return false;
+        }
 
-        // TODO: 实现着色器文件加载
-        // 这里应该使用 Windows 的文件 API 或 DirectXTex 库
+        // 保存字节码用于输入布局创建
+        m_vertexShaderBytecode.assign(
+            static_cast<char*>(blob->GetBufferPointer()),
+            static_cast<char*>(blob->GetBufferPointer()) + blob->GetBufferSize()
+        );
 
-        LOG_WARN("Shader loading not yet fully implemented");
-
-        // 创建基础着色器对象
-        auto shader = std::make_shared<Shader>();
-
-        // 简化的实现：编译为基本着色器
-        shader->m_vs = nullptr;
-        shader->m_ps = nullptr;
-        shader->m_inputLayout = nullptr;
-        shader->m_inputLayoutDesc = inputLayout;
-
-        LOG_DEBUG("Shader created: VS={} PS={}",
-                 std::string(vsPath.begin(), vsPath.end()),
-                 std::string(psPath.begin(), psPath.end()));
-
-        return shader;
+        return true;
     }
 
-    Shader::Shader(ID3D11VertexShader* vs, ID3D11PixelShader* ps, ID3D11InputLayout* layout)
-        : m_vs(vs), m_ps(ps), m_inputLayout(layout)
+    bool Shader::LoadPixelShader(GraphicsDevice* device, const std::string& filename, const char* entryPoint) 
     {
+        ComPtr<ID3DBlob> blob;
+        if (!CompileShader(filename, entryPoint, "ps_5_0", blob)) 
+        {
+            return false;
+        }
+
+        HRESULT hr = device->GetDevice()->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &m_pixelShader);
+        if (FAILED(hr)) 
+        {
+            return false;
+        }
+
+        return true;
     }
 
-    // TODO: 实现高级着色器功能
-    // - 包含常量缓冲区
-    // - 计算着色器
-    // - 动态着色器
-    // - 几何着色器
+    bool Shader::LoadComputeShader(GraphicsDevice* device, const std::string& filename, const char* entryPoint) 
+    {
+        ComPtr<ID3DBlob> blob;
+        if (!CompileShader(filename, entryPoint, "cs_5_0", blob)) 
+        {
+            return false;
+        }
 
-} // namespace lens::graphics
+        HRESULT hr = device->GetDevice()->CreateComputeShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &m_computeShader);
+        if (FAILED(hr)) 
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool Shader::LoadVertexShaderFromBytecode(GraphicsDevice* device, const void* bytecode, size_t size) {
+        HRESULT hr = device->GetDevice()->CreateVertexShader(bytecode, size, nullptr, &m_vertexShader);
+        if (FAILED(hr)) 
+        {
+            return false;
+        }
+
+        // 保存字节码
+        m_vertexShaderBytecode.assign(
+            static_cast<const char*>(bytecode),
+            static_cast<const char*>(bytecode) + size
+        );
+
+        return true;
+    }
+
+    bool Shader::LoadPixelShaderFromBytecode(GraphicsDevice* device, const void* bytecode, size_t size) 
+    {
+        HRESULT hr = device->GetDevice()->CreatePixelShader(bytecode, size, nullptr, &m_pixelShader);
+        return SUCCEEDED(hr);
+    }
+
+    bool Shader::LoadComputeShaderFromBytecode(GraphicsDevice* device, const void* bytecode, size_t size) 
+    {
+        HRESULT hr = device->GetDevice()->CreateComputeShader(bytecode, size, nullptr, &m_computeShader);
+        return SUCCEEDED(hr);
+    }
+
+    bool Shader::SetInputLayout(GraphicsDevice* device, const D3D11_INPUT_ELEMENT_DESC* layout, uint32_t layoutCount) 
+    {
+        if (m_vertexShaderBytecode.empty()) 
+        {
+            return false;
+        }
+
+        HRESULT hr = device->GetDevice()->CreateInputLayout(
+            layout, layoutCount,
+            m_vertexShaderBytecode.data(),
+            m_vertexShaderBytecode.size(),
+            &m_inputLayout
+        );
+
+        return SUCCEEDED(hr);
+    }
+
+    void Shader::SetToPipeline(GraphicsDevice* device) const 
+    {
+        auto context = device->GetContext();
+
+        if (m_vertexShader) {
+            context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+        }
+        if (m_pixelShader) {
+            context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+        }
+        if (m_computeShader) {
+            context->CSSetShader(m_computeShader.Get(), nullptr, 0);
+        }
+        if (m_inputLayout) {
+            context->IASetInputLayout(m_inputLayout.Get());
+        }
+    }
+
+    bool Shader::CompileShader(const std::string& filename, const char* entryPoint, const char* target, ComPtr<ID3DBlob>& blob) 
+    {
+        // 读取文件
+        std::ifstream file(filename, std::ios::binary | std::ios::ate);
+        if (!file.is_open()) {
+            return false;
+        }
+
+        std::vector<char> source(file.tellg());
+        file.seekg(0);
+        file.read(source.data(), source.size());
+
+        ComPtr<ID3DBlob> errorBlob;
+        HRESULT hr = D3DCompile(
+            source.data(), source.size(),
+            filename.c_str(), nullptr, nullptr,
+            entryPoint, target,
+            D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG,
+            0, &blob, &errorBlob
+        );
+
+        if (FAILED(hr)) {
+            if (errorBlob) {
+                // 输出编译错误
+                OutputDebugStringA(static_cast<const char*>(errorBlob->GetBufferPointer()));
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+}

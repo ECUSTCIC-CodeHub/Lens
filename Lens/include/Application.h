@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include <Windows.h>
-#include "RHI_dx11.h"
+#include "graphics/GraphicsDevice.h"
 #include "ImguiManager.h"
 
 namespace lens
@@ -28,7 +28,7 @@ namespace lens
         int m_nCmdShow;
         HWND m_hwnd;
 
-        RHI_dx11* m_rhi;
+        graphics::GraphicsDevice* m_graphicsDevice;
         ImguiManager* m_imgui;
 
         int width;

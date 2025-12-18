@@ -1,6 +1,6 @@
 ﻿#include "LensPch.h"
 #include "Application.h"
-#include "RHI_dx11.h"
+#include "graphics/GraphicsDevice.h"
 #include "ImguiManager.h"
 #include "gui/DemoPanel.h"
 #include "gui/DebugPanel.h"
@@ -22,7 +22,14 @@ namespace lens
 
     Application::~Application()
     {
-
+        if (m_imgui) {
+            delete m_imgui;
+            m_imgui = nullptr;
+        }
+        if (m_graphicsDevice) {
+            delete m_graphicsDevice;
+            m_graphicsDevice = nullptr;
+        }
     }
 
     void Application::Initialize()
@@ -33,10 +40,20 @@ namespace lens
             return;
         }
 
-        m_rhi = RHI_dx11::Create(m_hwnd, 800, 600);
-        m_rhi->Initialize(m_hwnd, 800, 600);
+        m_graphicsDevice = new graphics::GraphicsDevice();
+        graphics::GraphicsDevice::Desc deviceDesc{};
+        deviceDesc.windowHandle = m_hwnd;
+        deviceDesc.width = 800;
+        deviceDesc.height = 600;
+        deviceDesc.enableDebug = true;
+
+        if (!m_graphicsDevice->Initialize(deviceDesc)) {
+            LOG_ERROR("Failed to initialize graphics device");
+            return;
+        }
+
         m_imgui = new ImguiManager();
-        m_imgui->Initialize(m_hwnd, m_rhi->GetDevice(), m_rhi->GetContext());
+        m_imgui->Initialize(m_hwnd, m_graphicsDevice->GetDevice(), m_graphicsDevice->GetContext());
 
         // Enable menu
         m_imgui->SetMenuVisible(true);
@@ -71,13 +88,9 @@ namespace lens
             if (isExit)
                 break;
 
-            // Begin ImGui frame
+            // Begin frame
+            m_graphicsDevice->BeginFrame();
             m_imgui->BeginFrame();
-
-            // Clear the render target
-            const float clear_color_with_alpha[4] = { 0.45f, 0.55f, 0.60f, 1.00f };
-            m_rhi->GetContext()->OMSetRenderTargets(1, m_rhi->defaultRTV.GetAddressOf(), nullptr);
-            m_rhi->GetContext()->ClearRenderTargetView(m_rhi->defaultRTV.Get(), clear_color_with_alpha);
 
             // Render all UI panels
             m_imgui->GetUIManager()->RenderAll();
@@ -85,8 +98,9 @@ namespace lens
             // End ImGui frame and render
             m_imgui->EndFrame();
 
-            // Present the frame
-            m_rhi->GetSwapChain()->Present(1, 0);
+            // End frame and present
+            m_graphicsDevice->EndFrame();
+            m_graphicsDevice->Present(true);
         }
 
         return static_cast<int>(msg.wParam);
@@ -117,13 +131,13 @@ namespace lens
             return 0;
         case WM_SIZE:
             {
-                if (this->m_rhi !=nullptr && wParam != SIZE_MINIMIZED)
+                if (this->m_graphicsDevice != nullptr && wParam != SIZE_MINIMIZED)
                 {
                     int width = LOWORD(lParam);
                     int height = HIWORD(lParam);
 
-                    // 首先调整RHI的交换链大小
-                    this->m_rhi->Resize(width, height);
+                    // 首先调整图形设备的交换链大小
+                    this->m_graphicsDevice->Resize(width, height);
 
                     // 更新ImGui的显示尺寸
                     ImGuiIO& io = ImGui::GetIO();
