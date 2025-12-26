@@ -59,6 +59,9 @@ namespace lens::graphics
         // Mipmap 生成
         void GenerateMipmaps(GraphicsDevice* device);
 
+        // 保存到文件
+        bool SaveToFile(GraphicsDevice* device, const char* filename);
+
     private:
         Microsoft::WRL::ComPtr<ID3D11Texture2D> m_texture;
         Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_srv;

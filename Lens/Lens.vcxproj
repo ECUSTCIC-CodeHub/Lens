@@ -175,10 +175,12 @@ xcopy /Y "$(SolutionDir)\3rd\imgui\backends\imgui_impl_win32.cpp" "$(ProjectDir)
     <ClInclude Include="include\graphics\Buffer.h" />
     <ClInclude Include="include\graphics\Shader.h" />
     <ClInclude Include="include\graphics\Texture.h" />
+    <ClInclude Include="include\capturer\WGCCapturer.h" />
     <ClInclude Include="include\ImguiManager.h" />
     <ClInclude Include="include\LensPch.h" />
     <ClInclude Include="include\Log.h" />
     <ClInclude Include="include\Application.h" />
+    <ClInclude Include="include\WGCTestApp.h" />
     <ClInclude Include="include\gui\UIPanel.h" />
     <ClInclude Include="include\gui\UIManager.h" />
     <ClInclude Include="include\gui\DemoPanel.h" />
@@ -189,6 +191,7 @@ xcopy /Y "$(SolutionDir)\3rd\imgui\backends\imgui_impl_win32.cpp" "$(ProjectDir)
     <ClCompile Include="src\graphics\GraphicsDevice.cpp" />
     <ClCompile Include="src\graphics\Shader.cpp" />
     <ClCompile Include="src\graphics\Texture.cpp" />
+    <ClCompile Include="src\capturer\WGCCapturer.cpp" />
     <ClCompile Include="src\ImguiManager.cpp" />
     <ClCompile Include="src\gui\UIManager.cpp" />
     <ClCompile Include="src\gui\DemoPanel.cpp" />
@@ -199,8 +202,10 @@ xcopy /Y "$(SolutionDir)\3rd\imgui\backends\imgui_impl_win32.cpp" "$(ProjectDir)
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\main_wgc_test.cpp" />
+    <!-- <ClCompile Include="src\main.cpp" /> -->
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\WGCTestApp.cpp" />
     <!-- 以下为imgui引入需要编译的文件 -->
     <ClCompile Include="src\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
