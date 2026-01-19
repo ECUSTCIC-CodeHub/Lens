@@ -1,4 +1,4 @@
-#include "LensPch.h"
+﻿#include "LensPch.h"
 #include "ImguiManager.h"
 #include "Log.h"
 
@@ -27,10 +27,10 @@ namespace lens
         ImGuiIO& io = ImGui::GetIO();
         (void)io;
 
-        // Enable navigation and keyboard
+        // 启用键盘导航功能
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-        // Enable docking if available
+        // 启用窗口停靠功能
 #ifdef IMGUI_HAS_DOCKING
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 #endif

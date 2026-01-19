@@ -8,6 +8,12 @@
 
 namespace lens
 {
+    // 前向声明
+    namespace capturer
+    {
+        class WGCCapturer;
+    }
+
     class UIManager
     {
     private:
@@ -15,10 +21,19 @@ namespace lens
         std::map<std::string, UIPanel*> m_panelMap;
         bool m_showMenu = true;
 
+        // 注册所有默认面板
+        void RegisterDefaultPanels();
+        void RegisterCorePanels();
+        void RegisterCapturePanels(capturer::WGCCapturer* capturer);
+
     public:
         UIManager() = default;
         ~UIManager() = default;
 
+        // 统一初始化所有面板（推荐使用）
+        void InitializeAllPanels(capturer::WGCCapturer* capturer = nullptr);
+
+        // 手动添加面板的方法
         template<typename T, typename... Args>
         T* AddPanel(Args&&... args)
         {

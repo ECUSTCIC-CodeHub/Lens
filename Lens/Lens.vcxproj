@@ -185,6 +185,7 @@ xcopy /Y "$(SolutionDir)\3rd\imgui\backends\imgui_impl_win32.cpp" "$(ProjectDir)
     <ClInclude Include="include\gui\UIManager.h" />
     <ClInclude Include="include\gui\DemoPanel.h" />
     <ClInclude Include="include\gui\DebugPanel.h" />
+    <ClInclude Include="include\gui\CapturePanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\graphics\Buffer.cpp" />
@@ -196,16 +197,16 @@ xcopy /Y "$(SolutionDir)\3rd\imgui\backends\imgui_impl_win32.cpp" "$(ProjectDir)
     <ClCompile Include="src\gui\UIManager.cpp" />
     <ClCompile Include="src\gui\DemoPanel.cpp" />
     <ClCompile Include="src\gui\DebugPanel.cpp" />
+    <ClCompile Include="src\gui\CapturePanel.cpp" />
     <ClCompile Include="src\LensPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\main_wgc_test.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <!-- <ClCompile Include="src\main.cpp" /> -->
     <ClCompile Include="src\Application.cpp" />
-    <ClCompile Include="src\WGCTestApp.cpp" />
     <!-- 以下为imgui引入需要编译的文件 -->
     <ClCompile Include="src\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
