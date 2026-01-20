@@ -108,24 +108,6 @@ namespace lens::graphics
         return SUCCEEDED(hr);
     }
 
-    void Shader::SetToPipeline(GraphicsDevice* device) const 
-    {
-        auto context = device->GetContext();
-
-        if (m_vertexShader) {
-            context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
-        }
-        if (m_pixelShader) {
-            context->PSSetShader(m_pixelShader.Get(), nullptr, 0);
-        }
-        if (m_computeShader) {
-            context->CSSetShader(m_computeShader.Get(), nullptr, 0);
-        }
-        if (m_inputLayout) {
-            context->IASetInputLayout(m_inputLayout.Get());
-        }
-    }
-
     bool Shader::CompileShader(const std::string& filename, const char* entryPoint, const char* target, ComPtr<ID3DBlob>& blob) 
     {
         // 读取文件

@@ -5,7 +5,7 @@
 #include "gui/CapturePanel.h"
 #include "capturer/WGCCapturer.h"
 #include "Log.h"
-
+#define IMGUI_HAS_DOCKING
 namespace lens
 {
     void UIManager::InitializeAllPanels(capturer::WGCCapturer* capturer)
@@ -26,28 +26,28 @@ namespace lens
         LOG_INFO("UIManager: Registering core panels...");
 
         // 注册 DemoPanel
-        //auto* demoPanel = AddPanel<DemoPanel>();
-        //if (demoPanel)
-        //{
-        //    LOG_INFO("  - DemoPanel registered");
-        //    demoPanel->SetVisible(false); // 默认隐藏 Demo 面板
-        //}
-        //else
-        //{
-        //    LOG_ERROR("  - Failed to register DemoPanel");
-        //}
-
-        // 注册 DebugPanel
-        auto* debugPanel = AddPanel<DebugPanel>();
-        if (debugPanel)
+        auto* demoPanel = AddPanel<DemoPanel>();
+        if (demoPanel)
         {
-            LOG_INFO("  - DebugPanel registered");
-            debugPanel->SetVisible(true); // 默认显示 Debug 面板
+            LOG_INFO("  - DemoPanel registered");
+            demoPanel->SetVisible(false); // 默认隐藏 Demo 面板
         }
         else
         {
-            LOG_ERROR("  - Failed to register DebugPanel");
+            LOG_ERROR("  - Failed to register DemoPanel");
         }
+
+        // 注册 DebugPanel
+        //auto* debugPanel = AddPanel<DebugPanel>();
+        //if (debugPanel)
+        //{
+        //    LOG_INFO("  - DebugPanel registered");
+        //    debugPanel->SetVisible(true); // 默认显示 Debug 面板
+        //}
+        //else
+        //{
+        //    LOG_ERROR("  - Failed to register DebugPanel");
+        //}
     }
 
     void UIManager::RegisterCapturePanels(capturer::WGCCapturer* capturer)
@@ -118,6 +118,37 @@ namespace lens
         {
             RenderMenu();
         }
+
+        // 创建 DockSpace 以支持窗口停靠功能
+#ifdef IMGUI_HAS_DOCKING
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+        {
+            // 在主菜单下方创建全屏 DockSpace
+            ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->WorkPos);
+            ImGui::SetNextWindowSize(viewport->WorkSize);
+            ImGui::SetNextWindowViewport(viewport->ID);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::Begin("DockSpace", nullptr,
+                ImGuiWindowFlags_NoTitleBar |
+                ImGuiWindowFlags_NoCollapse |
+                ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoMove |
+                ImGuiWindowFlags_NoDocking |
+                ImGuiWindowFlags_NoBringToFrontOnFocus |
+                ImGuiWindowFlags_NoNavFocus);
+            ImGui::PopStyleVar(3);
+
+            // 创建实际的 DockSpace
+            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+
+            ImGui::End();
+        }
+#endif
 
         for (auto& panel : m_panels)
         {

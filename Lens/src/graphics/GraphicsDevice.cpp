@@ -176,4 +176,24 @@ namespace lens::graphics
         scissorRect.bottom = static_cast<LONG>(bottom);
         m_context->RSSetScissorRects(1, &scissorRect);
     }
+
+    void GraphicsDevice::SetVertexShader(ID3D11VertexShader* shader)
+    {
+        m_context->VSSetShader(shader, nullptr, 0);
+    }
+
+    void GraphicsDevice::SetPixelShader(ID3D11PixelShader* shader)
+    {
+        m_context->PSSetShader(shader, nullptr, 0);
+    }
+
+    void GraphicsDevice::SetComputeShader(ID3D11ComputeShader* shader)
+    {
+        m_context->CSSetShader(shader, nullptr, 0);
+    }
+
+    void GraphicsDevice::SetInputLayout(ID3D11InputLayout* layout)
+    {
+        m_context->IASetInputLayout(layout);
+    }
 }

@@ -72,7 +72,7 @@ namespace lens
 
         m_imgui->SetMenuVisible(true);
 
-        // 初始化UIManager
+        // 初始化UIManager，后续Cpaturer也放进来
         UIManager* uiManager = m_imgui->GetUIManager();
         uiManager->InitializeAllPanels(nullptr);
 

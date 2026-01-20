@@ -42,9 +42,6 @@ namespace lens::graphics
         // 输入布局设置
         bool SetInputLayout(GraphicsDevice* device, const D3D11_INPUT_ELEMENT_DESC* layout, uint32_t layoutCount);
 
-        // 便捷方法：设置着色器到管线
-        void SetToPipeline(GraphicsDevice* device) const;
-
     private:
         ComPtr<ID3D11VertexShader> m_vertexShader;
         ComPtr<ID3D11PixelShader> m_pixelShader;

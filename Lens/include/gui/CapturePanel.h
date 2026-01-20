@@ -1,10 +1,11 @@
-#pragma once
+﻿#pragma once
 
 #include "UIPanel.h"
 #include "capturer/WGCCapturer.h"
 
 namespace lens
 {
+    // 与Capturer耦合，考虑在这里面初始化
     class CapturePanel : public UIPanel
     {
     private:

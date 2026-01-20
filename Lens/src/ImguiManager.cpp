@@ -1,7 +1,7 @@
 ﻿#include "LensPch.h"
 #include "ImguiManager.h"
 #include "Log.h"
-
+#define IMGUI_HAS_DOCKING
 namespace lens
 {
     ImguiManager::ImguiManager()
@@ -33,6 +33,8 @@ namespace lens
         // 启用窗口停靠功能
 #ifdef IMGUI_HAS_DOCKING
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        // 启用多视口功能（允许窗口拖拽到主窗口外）
+        io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 #endif
 
         ImGui::StyleColorsDark();
@@ -80,6 +82,16 @@ namespace lens
 
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+        // 更新和渲染多视口窗口（docking 拖出的窗口）
+#ifdef IMGUI_HAS_DOCKING
+        ImGuiIO& io = ImGui::GetIO();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+#endif
     }
 
     void ImguiManager::Shutdown()

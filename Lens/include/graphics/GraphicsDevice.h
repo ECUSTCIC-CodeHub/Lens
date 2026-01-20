@@ -65,6 +65,11 @@ namespace lens::graphics
         void SetViewport(float x, float y, float width, float height, float minDepth = 0.0f, float maxDepth = 1.0f);
         void SetScissor(uint32_t left, uint32_t top, uint32_t right, uint32_t bottom);
 
+        // 着色器设置
+        void SetVertexShader(ID3D11VertexShader* shader);
+        void SetPixelShader(ID3D11PixelShader* shader);
+        void SetComputeShader(ID3D11ComputeShader* shader);
+        void SetInputLayout(ID3D11InputLayout* layout);
 
     private:
         Microsoft::WRL::ComPtr<ID3D11Device> m_device;
